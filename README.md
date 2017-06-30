@@ -1,4 +1,7 @@
 # Bullwhip game
 Bullwhip game is a shiny app that illustrates the distribution process of a single product in a four stages supply chain. The goal of the game being to minimize costs along the supply chain.
 
-To play the bullwhip game visit https://marchenamarlene.shinyapps.io/bullwhipgame/
+You can download and run the bullwhip game app directly from the Github repositoy, just run 
+shiny::runGitHub('bullwhipgame', 'msmarchena')
+
+To play the bullwhip game online visit https://marchenamarlene.shinyapps.io/bullwhipgame/
