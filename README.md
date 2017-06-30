@@ -1,2 +1,2 @@
-# Bullwhip-game
-Our web interface illustrates the distribution process of a multi-echelon supply chain, the goal of the game being to minimize costs along the chain while satisfying service level requirements.
+# Bullwhip game
+Bullwhip game is a shiny app that illustrates the distribution process of a single product in a four satages supply chain. the goal of the game being to minimize costs along the chain while satisfying service level requirements.
