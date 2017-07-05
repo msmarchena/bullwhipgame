@@ -9,19 +9,19 @@ fluidPage(navbarPage("Bullwhip game", id= "mainNavbarPage", theme= "flatly.css",
                           br(), 
                          p(strong('Bullwhip game')),         
                        
-p('The Bullwhip Game simulates the distribution process of a single product that use a four stages supply chain: 
+p('The Bullwhip Game simulates the distribution process of a single product that uses a four stages supply chain: 
 reailer, wholesaler, distributor and factory.'),
 
-p('Members of the supply chain need to
+p('The members of the supply chain need to
 meet customer demand with minimal shortage situations and inventory cost, while satisfying service level requirements. All
-participants use the same inventory replenishment policy, forecast method, delivery time and service level.
+participants use the same inventory replenishment policy, forecast method, delivery lead time and service level.
 Holding and shortage cost are fixed and information sharing and cooperation is not allowed.'),
 
-p('As a main result of the simulation is the bullwhip effect, the increase in demand variability along the supply chain. 
-   The bullwhip effect is pointed out as a key driver of inefficiencies associated with the supply chain. In the presence of this phenomenon,
-participants involved in the manufacture of a product and its distribution to final customer face unstable
+'As a main result of the simulation, we may observe the', em('bullwhip effect,'), 'i.e. the increase in demand variability along the supply chain. 
+   The', em('bullwhip effect'), 'is pointed out as a key driver of inefficiencies associated with the supply chain. In the presence of this phenomenon,
+participants involved in the manufacture of a product and its distribution to final customer usually face unstable
 production schedules or excessive inventory.
-  ')
+  '
                              ),#endtabPanel
                       tabPanel("Rules",
                                
@@ -31,7 +31,7 @@ production schedules or excessive inventory.
                                  p(strong('Dynamics of the game:')),   
                                p('Each company in the system is the customer of upstream and a supplier of downstream company in
 the supply chain. For instance, the retailer observes customer demand and based on its current inventory situation places orders to its supplier, 
-in this case the wholesaler. He receives orders made after a delivery lead time.
+in this case the wholesaler. She receives orders made after a delivery lead time.
  '),
                                
                                p(strong('Goal:')),  
@@ -44,23 +44,22 @@ in this case the wholesaler. He receives orders made after a delivery lead time.
                                ),#endsidebarPanel
                               mainPanel(
                                 br(), br(),
-                              # img(src='chain3_425x550.png',height=450, width=640)
-                              div(img(src='chain_425x550.png',height=450, width=640), style="text-align: center;")
-                              )#endmainPanel
-
-
+                               div(img(src='chain_425x550.png',height=450, width=540), style="text-align: center;")
+                               )#endmainPanel
                       ),
                       tabPanel("How To Play",
                                br(),
               p(' - Player needs to set up the participants inputs tab before start to play. All 
-                 companies follow same parameters and use the same Order Up to Level (OUT) replenishment policy. '),
-              p(' - There are 3 forecast methods: Simple moving average, Exponential smoothing and Autorregresive model order one. Each 
-method has its corresponding parameter. Default values for lead time, service level, holding and shortage cost can be changed. '),
+                 companies follow the same parameters and use the same Order Up to Level (OUT) replenishment policy. '),
+              p(' - The mean demand forecast is calculated using one of the following methods: simple moving average, exponential smoothing 
+or autoregressive model order one . The default simple moving average method requires the number of periods to be used to calculate
+the mean demand. In the case of the exponential smoothing method, you need to choose the smoothing parameter. 
+                Default values for lead time, service level, holding and shortage cost may be changed. '),
               p('- In the play tab, insert a value for the customer demand and click the "Update" button.'),
-              p('- Each time a value is updated, the reult tables of all participants is presented in the main panel.  
+              p('- Each time a value is updated, the reult tables of all participants are displayed in the main panel.  
 Note that there are alredy initial values which are necessary to apply forecast methods.
                  '),
-               p('- The reults are displyed after 10 interactions, but you can continue to play. '),
+               p('- The results are displayed after 10 interactions, but you can continue to play. '),
                p('- Use the glossary tab to understand how variables are calculated.  ')
                
                                )#endtabPanel
@@ -79,13 +78,15 @@ tabPanel("Participants inputs",
          fluidRow(
            column(6, 
                   selectInput(inputId = "forecast", label = "Forecast method", choices = list("Simple Moving Average (SMA)"="SMA", 
-                                                                                              "Exponential Smoothing (ES)"="ES", "Autorregressive model - AR(1)"="MMSE"), selected="SMA")
+                                                                                              "Exponential Smoothing (ES)"="ES", "Autoregressive model - AR(1)"="MMSE"), selected="SMA")
            ),#endcolumn         
            column(4, 
                   conditionalPanel(condition = "input.forecast == 'SMA'",
                                    numericInput("periods","Number of periods to be used", 5)
                   ),#endconditionalPanel 
-                  conditionalPanel(condition = "input.forecast == 'ES'", numericInput("alpha","Smoothing parameter", 0.20) 
+                  conditionalPanel(condition = "input.forecast == 'ES'", 
+                                   numericInput("alpha","Smoothing parameter", 0.20),
+                                   helpText('A number between 0 and 1')
                   )
             )#endcolumn
          ),#endfluidRow
@@ -101,9 +102,6 @@ tabPanel("Participants inputs",
          ),#endfluidRow
          br(),
          fluidRow(
-           # column(4,
-           #         numericInput("ord_cost","Ordering cost", 0)
-           # ),#endcolumn
            column(4, 
                   numericInput("h_cost","Holding cost", 0.5)
            ),#endcolumn
@@ -111,7 +109,8 @@ tabPanel("Participants inputs",
            column(4, 
                   numericInput("backlog_cost","Shortage Penalty cost", 2)
            )#endcolumn
-         )#endfluidRow
+         ),#endfluidRow
+         helpText('Holding and shortage penalty cost must be positive numbers')
 ),#endtabPanel
 #######################################################################################################################
           tabPanel("Play",
@@ -119,26 +118,27 @@ tabPanel("Participants inputs",
                    
                     sidebarPanel(width = 3,
                               
-                              #helpText("Customer demand"),      
-                              
                               numericInput("c1","Customer demand", NA),
                               tags$p(actionButton("update", "Update")),
                               tags$p(actionButton("reset", "Clear")),
+                              tags$p(actionButton("restart", "Restart")),
                               textOutput("count"),
+                              br(),
                              #You can use renderUI and htmlOutput instead of renderText and textOutput( cointainer=pre) to display multiple lines
                               htmlOutput("display")
                          
                   ),#endsiderbarPanel #uiOutput("tb"))  #tableOutput("example")
-                  mainPanel(  tabsetPanel(tabPanel("Retailer", DT::dataTableOutput("Retailertab")),
+                  mainPanel( width = 9,  
+                            tabsetPanel(tabPanel("Retailer", DT::dataTableOutput("Retailertab")),
                                           tabPanel("Wholesaler", DT::dataTableOutput("Wholesalertab")),
                                           tabPanel("Distributor", DT::dataTableOutput("Distributortab")),
                                           tabPanel("Factory", DT::dataTableOutput("Factorytab")),
                                           tabPanel("Perceived demand", DT::dataTableOutput("perceivedTab")),
-                                          tabPanel("Bullwhip plot", plotOutput("bullwhip_plot"))
+                                          tabPanel("Bullwhip effect", plotOutput("bullwhip_plot"))
                              )#endtabsetPanel    
                   )#endmainPanel  
 
-          ),#endtabPanel
+          ),#endtabPanel  
 
 #######################################################################################################################
                    
@@ -156,9 +156,11 @@ tabPanel("Participants inputs",
                      column(12,
                             h4('About Bullwhip game'), 
                          
-                            p('The Bullwhip Game is an Open Source project developed to ilustrate and to explore the bullwhip effect. 
-The main goal of our interactive tool is to present the distribution dynamics of a product and show typical problems that arise 
-from a non-coordinated system, specially the bullwhip effect. Our interactive tool use R programming language and Shiny to give an easy and friendly user experience. '),
+                            'The Bullwhip Game is an Open Source project developed to illustrate and explore the', em('bullwhip effect.'), 
+'The main goal of our interactive tool is to present the dynamics of distribution of a product and to show typical problems arising 
+from a non-coordinated system, specially the', em('bullwhip effect.'), 'Our interactive tool use R programming language and Shiny
+to offer an easy and friendly user experience.',
+                            br(), br(),
 
                            p(' Created by ', strong('Marlene Silva Marchena')),
                           strong('Version: 0.1'), 
