@@ -1,27 +1,28 @@
 library(shiny)
+library(plotly)
 
-fluidPage(navbarPage("Bullwhip game", id= "mainNavbarPage", theme= "flatly.css",
+fluidPage(navbarPage("SCbullwhip", id= "mainNavbarPage", theme= "flatly.css",
 ########################################################################################################################                     
           tabPanel("Description",
                    
                    tabsetPanel(
                       tabPanel("Overview",
                           br(), 
-                         p(strong('Bullwhip game')),         
+                         p(strong('SCbullwhip')),         
                        
-p('The Bullwhip Game simulates the distribution process of a single product that uses a four stages supply chain: 
-reailer, wholesaler, distributor and factory.'),
+    'The SCbullwhip is an educational game that has as purpose the illustration and exploration of 
+      the', em('bullwhip effect.'), 'i.e. the increase in demand variability along the supply chain.', 
+    
+    br(), br(), 
+    
+    p('The game simulates the distribution process of a single product that uses a four stages supply chain: 
+reailer, wholesaler, distributor and factory. The members of the supply chain need to
+      meet customer demand with minimal shortage situations and inventory cost, while satisfying service level requirements. All
+      participants use the same inventory replenishment policy, forecast method, delivery lead time and service level.
+      Holding and shortage cost are fixed and information sharing and cooperation is not allowed.')
+    
+    
 
-p('The members of the supply chain need to
-meet customer demand with minimal shortage situations and inventory cost, while satisfying service level requirements. All
-participants use the same inventory replenishment policy, forecast method, delivery lead time and service level.
-Holding and shortage cost are fixed and information sharing and cooperation is not allowed.'),
-
-'As a main result of the simulation, we may observe the', em('bullwhip effect,'), 'i.e. the increase in demand variability along the supply chain. 
-   The', em('bullwhip effect'), 'is pointed out as a key driver of inefficiencies associated with the supply chain. In the presence of this phenomenon,
-participants involved in the manufacture of a product and its distribution to final customer usually face unstable
-production schedules or excessive inventory.
-  '
                              ),#endtabPanel
                       tabPanel("Rules",
                                
@@ -38,8 +39,8 @@ in this case the wholesaler. She receives orders made after a delivery lead time
                                p('To minimize the total inventory cost in the supply chain. '),
                                
                                p(strong('Results:')),  
-                               p('After 10 interactions the total cost is displayed. A line graph of demand variability
-                                in the supply chain (bullwhip effect) is also shown')
+                               'After 10 interactions the total cost is displayed. A line graph of demand variability
+                                in the supply chain ', em('(bullwhip effect)'), ' is also shown'
                          
                                ),#endsidebarPanel
                               mainPanel(
@@ -49,7 +50,20 @@ in this case the wholesaler. She receives orders made after a delivery lead time
                       ),
                       tabPanel("How To Play",
                                br(),
-              p(' - Player needs to set up the participants inputs tab before start to play. All 
+                               
+                               
+                       fluidRow(
+                             column(12,
+                                    p('The members of the supply chain need to
+meet customer demand with minimal shortage situations and inventory cost, while satisfying service level requirements. All
+participants use the same inventory replenishment policy, forecast method, delivery lead time and service level.
+Holding and shortage cost are fixed and information sharing and cooperation is not allowed.')                                    
+                             )#endcolumn
+                       ),#endfluidRow
+       br(),                
+       p(strong('Instructions')),                 
+                               
+       p(' - You need to set up the participants inputs tab before start to play. All 
                  companies follow the same parameters and use the same Order Up to Level (OUT) replenishment policy. '),
               p(' - The mean demand forecast is calculated using one of the following methods: simple moving average, exponential smoothing 
 or autoregressive model order one . The default simple moving average method requires the number of periods to be used to calculate
@@ -57,7 +71,7 @@ the mean demand. In the case of the exponential smoothing method, you need to ch
                 Default values for lead time, service level, holding and shortage cost may be changed. '),
               p('- In the play tab, insert a value for the customer demand and click the "Update" button.'),
               p('- Each time a value is updated, the reult tables of all participants are displayed in the main panel.  
-Note that there are alredy initial values which are necessary to apply forecast methods.
+Note that there are alredy initial values.
                  '),
                p('- The results are displayed after 10 interactions, but you can continue to play. '),
                p('- Use the glossary tab to understand how variables are calculated.  ')
@@ -71,7 +85,7 @@ tabPanel("Participants inputs",
          
          fluidRow(
            column(12,
-              helpText('Before to start playing you need to setup the parameters below. All the participants follow the same parameters')
+              h4('Before to start playing you need to setup the parameters below. All the participants follow the same parameters')
            )#endcolumn
          ),#endfluidRow
          br(),
@@ -129,12 +143,35 @@ tabPanel("Participants inputs",
                          
                   ),#endsiderbarPanel #uiOutput("tb"))  #tableOutput("example")
                   mainPanel( width = 9,  
-                            tabsetPanel(tabPanel("Retailer", DT::dataTableOutput("Retailertab")),
-                                          tabPanel("Wholesaler", DT::dataTableOutput("Wholesalertab")),
-                                          tabPanel("Distributor", DT::dataTableOutput("Distributortab")),
-                                          tabPanel("Factory", DT::dataTableOutput("Factorytab")),
-                                          tabPanel("Perceived demand", DT::dataTableOutput("perceivedTab")),
-                                          tabPanel("Bullwhip effect", plotOutput("bullwhip_plot"))
+                            tabsetPanel(tabPanel("Retailer", 
+                                                br(),         
+                                                h4(' Retailer main results'),
+                                                br(),
+                                                DT::dataTableOutput("Retailertab")),
+                                          tabPanel("Wholesaler", 
+                                                  br(),         
+                                                  h4(' Wholesaler main results'),
+                                                  br(),         
+                                                  DT::dataTableOutput("Wholesalertab")),
+                                          tabPanel("Distributor", 
+                                                  br(),         
+                                                  h4('Distributor main results'),
+                                                  br(),         
+                                          DT::dataTableOutput("Distributortab")),
+                                          tabPanel("Factory", 
+                                                  br(),         
+                                                  h4('Factory main results'),
+                                                  br(),         
+                                          DT::dataTableOutput("Factorytab")),
+                                          tabPanel("Orders", 
+                                                  br(),         
+                                                  h4('Resume of orders'),
+                                                  br(),         
+                                          DT::dataTableOutput("perceivedTab")),
+                                          tabPanel("Graph", 
+                                                   br(),
+                                                   h4('Orders plot'),     
+                                                   plotlyOutput("bullwhip_plot"))
                              )#endtabsetPanel    
                   )#endmainPanel  
 
@@ -154,9 +191,9 @@ tabPanel("Participants inputs",
           tabPanel("About", 
                    fluidRow(
                      column(12,
-                            h4('About Bullwhip game'), 
+                            h4('About SCbullwhip'), 
                          
-                            'The Bullwhip Game is an Open Source project developed to illustrate and explore the', em('bullwhip effect.'), 
+                            'The SCbullwhip is an Open Source project developed to illustrate and explore the', em('bullwhip effect.'), 
 'The main goal of our interactive tool is to present the dynamics of distribution of a product and to show typical problems arising 
 from a non-coordinated system, specially the', em('bullwhip effect.'), 'Our interactive tool use R programming language and Shiny
 to offer an easy and friendly user experience.',
