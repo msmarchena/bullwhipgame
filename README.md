@@ -2,7 +2,7 @@
 SCbullwhip game is a shiny app that illustrates the distribution process of a single product in a four stages supply chain. The goal of the game being to minimize costs along the supply chain.
 
 The SCbullwhip is an educational game that has as purpose the illustration and exploration of 
-      the *bullwhip effect*, 'i.e. the increase in demand variability along the supply chain.
+      the *bullwhip effect*, i.e. the increase in demand variability along the supply chain.
     
  
     
