@@ -1,7 +1,7 @@
 # Bullwhip game
 Bullwhip game is a shiny app that illustrates the distribution process of a single product in a four stages supply chain. The goal of the game being to minimize costs along the supply chain.
 
-Installation:
+**Installation:**
 
 To play the bullwhip game locally you must have installed R, Shiny and the packages used in the server file.
 Copy the "server.R" and "ui.R" files and "www" folder in the same directory on your machine.
