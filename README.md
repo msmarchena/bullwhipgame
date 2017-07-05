@@ -4,7 +4,7 @@ Bullwhip game is a shiny app that illustrates the distribution process of a sing
 **Installation:**
 
 To play the bullwhip game locally you must have installed R, Shiny and the packages used in the server file.<br>
-Copy the "server.R" and "ui.R" files and "www" folder in the same directory on your machine.
+Copy the "server.R" and "ui.R" files and "www" folder in the same directory on your machine.<br>
 Open one of the files in RStudio and click the "runApp" button.
 
 From Github, the following command will download and run the application
