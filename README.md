@@ -6,7 +6,7 @@ The game simulates the distribution process of a single product that uses a four
 reailer, wholesaler, distributor and factory. The members of the supply chain need to
 meet customer demand with minimal shortage situations and inventory cost, while satisfying service level requirements. All
 participants use the same inventory replenishment policy, forecast method, delivery lead time and service level.
-Holding and shortage cost are fixed and information sharing and cooperation is not allowed
+Holding and shortage cost are fixed and information sharing and cooperation is not allowed. The goal of the game is to minimize the total inventory cost in the supply chain.
 
 
 
