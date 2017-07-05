@@ -2,6 +2,7 @@ library(shiny)
 library(forecast)
 library(SCperf)
 library(DT)
+library(plotly)
 
 ## mylag function
 mylag <- function(x, lag) {
@@ -71,11 +72,11 @@ function(input, output, session) {
   #W_values <- reactiveVal(data.frame(W_D=o, W_Rec=rc, W_MD=m, W_SD=sd,  W_NS=ns, W_LTD=ltd, W_SS= ss, W_OUT=out, W_Ord=o))
   W_values <- reactiveVal(data.frame( Demand=o, Receive=rc, Forecast=m, NS=ns, LTD=ltd, SS= ss, OUT=out, Order=o, Cost=cost, Bullwhip=bw))
 # stores the current distribution data frame, called by D_values() and set by D_values(new_D_values)
-  D_values <- reactiveVal(data.frame( Demand=o, Receive=rc, Forecast=m, NS=ns, LTD=ltd, SS= ss, OUT=out, Order=o, Cost=cost, Bullwhip=bw))
+  D_values <- reactiveVal(data.frame(Demand=o, Receive=rc, Forecast=m, NS=ns, LTD=ltd, SS= ss, OUT=out, Order=o, Cost=cost, Bullwhip=bw))
 # stores the current factory data frame, called by F_values() and set by F_values(new_F_values)
-  F_values <- reactiveVal(data.frame( Demand=o, Receive=rc, Forecast=m, NS=ns, LTD=ltd, SS= ss, OUT=out, Order=o, Cost=cost, Bullwhip=bw))
+  F_values <- reactiveVal(data.frame(Demand=o, Receive=rc, Forecast=m, NS=ns, LTD=ltd, SS= ss, OUT=out, Order=o, Cost=cost, Bullwhip=bw))
 # stores the perceived demand of all participants in a data frame, called by bullwhip_values() and set by values(new_bullwhip_values)
-  perceived_demand <- reactiveVal(data.frame( Customer_demand=d, Retailer=o, Wholesaler=o, Distributor=o, Factory=o))
+  perceived_demand <- reactiveVal(data.frame(Customer_demand=d, Retailer=o, Wholesaler=o, Distributor=o, Factory=o))
 # update values table on button click
   observeEvent(input$update,{
 ########################################################################################################################  
@@ -83,8 +84,7 @@ function(input, output, session) {
 ######################################################################################################################## 
  
     old_values <- values()
-    #t_new <- tail(old_values$Time, 1) + 1
-    
+
     d_new <- cust_demand() 
     rc_new <- mylag(old_values$Order, lt()) 
     ns_new <- tail(old_values$NS, 1) + rc_new - d_new  
@@ -166,7 +166,7 @@ function(input, output, session) {
 ########################################################################################################################
 
   old_D_values <- D_values()
-
+ 
   dd_new <- tail(old_W_values$Order, 1)
   drc_new <-  mylag(old_D_values$Order, lt())  #tail(old_D_values$Order, 1)
   dns_new <- tail(old_D_values$NS, 1) + drc_new - dd_new
@@ -207,7 +207,7 @@ function(input, output, session) {
 ########################################################################################################################
 
   old_F_values <- F_values()
-
+ 
   fd_new <- tail(old_D_values$Order, 1)
   frc_new <- mylag(old_F_values$Order, lt())  ## tail(old_F_values$Order, 1)
   fns_new <- tail(old_F_values$NS, 1) + frc_new - fd_new
@@ -320,9 +320,9 @@ function(input, output, session) {
     input$reset
     isolate(updateCounter$i <- updateCounter$i - 1)
   })
-  ##################################################################################################################
-  # Display main results
-  ##################################################################################################################
+##################################################################################################################
+# Display main results
+##################################################################################################################
   r_invcost <- reactive({ colSums(values()[9]) })
   w_invcost <- reactive({ colSums(W_values()[9]) })
   d_invcost <- reactive({ colSums(D_values()[9]) })
@@ -369,30 +369,56 @@ function(input, output, session) {
 ####################################################################################################################  
  # output$Retailertab <- DT::renderDataTable({  return(values())  })
   output$Retailertab <- DT::renderDataTable({  return(values())  }
-                                            ,
-                                            options = list(
-                                              autoWidth = TRUE,
-                                              columnDefs = list(list(width = '80px', targets = "_all"))
-                                            )
+                                             ,
+                                            colnames = c('Time' = 1),
+                                            options = list(lengthMenu = c(5, 25, 50), pageLength = 25)
+                                            #rownames = FALSE
+                                            # options = list(
+                                            #   autoWidth = TRUE,
+                                            #   columnDefs = list(list(width = '80px', targets = "_all"))
+                                            #)
                                             )
   # # Print the wholwsale table  stored in W_values$df, 
-   output$Wholesalertab <- DT::renderDataTable({  return(W_values())  })
+   output$Wholesalertab <- DT::renderDataTable({  return(W_values())  },
+                                               colnames = c('Time' = 1),
+                                               options = list(lengthMenu = c(5, 25, 50), pageLength = 25)
+                                               )
   # # Print the distribution table stored in D_values$df, 
-  output$Distributortab <- DT::renderDataTable({  return(D_values())  })
+  output$Distributortab <- DT::renderDataTable({  return(D_values())  },
+                                               colnames = c('Time' = 1),
+                                               options = list(lengthMenu = c(5, 25, 50), pageLength = 25)
+                                               )
   # # Print the factory table stored in F_values$df, 
-   output$Factorytab <- DT::renderDataTable({  return(F_values())  })
+   output$Factorytab <- DT::renderDataTable({  return(F_values())  },
+                                            colnames = c('Time' = 1),
+                                            options = list(lengthMenu = c(5, 25, 50), pageLength = 25)
+                                            )
   # # Bullwhip effect plot
-  output$perceivedTab<- DT::renderDataTable({  return(perceived_demand())  })  
+  output$perceivedTab<- DT::renderDataTable({  return(perceived_demand())  },
+                                            colnames = c('Time' = 1),
+                                            options = list(lengthMenu = c(5, 25, 50), pageLength = 25)
+                                            )  
   
 ####################################################################################################################    
 ## Bullwhip  line graph
 ####################################################################################################################  
-output$bullwhip_plot<- renderPlot({ matplot(perceived_demand(), type="l", pch=1, col=(1:5))
-                                      legend("topleft", inset=.05, legend=c("customer_demand", "retailer","wholesaler","distributor","factory")
-                                      , pch=1, col=(1:5), horiz=FALSE)
-                             })
 
-####################################################################################################################    
+output$bullwhip_plot<- renderPlotly({ 
+  plot_ly(perceived_demand(), x = 1:nrow(perceived_demand()), y = ~Customer_demand, name = 'Customer Demand', type = 'scatter', mode = 'lines') %>%
+    add_trace(y = ~Retailer, name = 'Retailer', mode = 'lines') %>%
+    add_trace(y = ~Wholesaler, name = 'Wholesaler', mode = 'lines') %>%
+    add_trace(y = ~Distributor, name = 'Distributor', mode = 'lines') %>%
+    add_trace(y = ~Factory, name = 'Factory', mode = 'lines') %>%
+  layout(xaxis = list(title = "Time"),
+         yaxis = list(title = "Order"),
+         legend = list(x = 0.1, y = 0.9)
+         )
+  
+#command for horizontal legend
+# layout(legend = list(orientation = 'h')) 
+  })
+  
+###################################################################################################################    
 #Glossary
 #####################################################################################################################
   output$notation <- renderUI({
