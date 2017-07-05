@@ -66,14 +66,14 @@ function(input, output, session) {
 ######################################################################################################################  
 # stores the current retailer data frame, called by values() and set by values(new_values)
   #values <- reactiveVal(data.frame(Time=t, Demand=d, Receive=rc, Mean=m, std=sd,  NS=ns, LTD=ltd, SS= ss, OUT=out, Order=o))
-  values <- reactiveVal(data.frame( Demand=d, Receive=rc, Forecast=m, NS=ns, LTD=ltd, SS= ss, OUT=out, Order=o, InvCost=cost, Bullwhip=bw))
+  values <- reactiveVal(data.frame( Demand=d, Receive=rc, Forecast=m, NS=ns, LTD=ltd, SS= ss, OUT=out, Order=o, Cost=cost, Bullwhip=bw))
 # stores the current wholesale data frame, called by W_values() and set by W_values(new_W_values)
   #W_values <- reactiveVal(data.frame(W_D=o, W_Rec=rc, W_MD=m, W_SD=sd,  W_NS=ns, W_LTD=ltd, W_SS= ss, W_OUT=out, W_Ord=o))
-  W_values <- reactiveVal(data.frame( Demand=o, Receive=rc, Forecast=m, NS=ns, LTD=ltd, SS= ss, OUT=out, Order=o, InvCost=cost, Bullwhip=bw))
+  W_values <- reactiveVal(data.frame( Demand=o, Receive=rc, Forecast=m, NS=ns, LTD=ltd, SS= ss, OUT=out, Order=o, Cost=cost, Bullwhip=bw))
 # stores the current distribution data frame, called by D_values() and set by D_values(new_D_values)
-  D_values <- reactiveVal(data.frame( Demand=o, Receive=rc, Forecast=m, NS=ns, LTD=ltd, SS= ss, OUT=out, Order=o, InvCost=cost, Bullwhip=bw))
+  D_values <- reactiveVal(data.frame( Demand=o, Receive=rc, Forecast=m, NS=ns, LTD=ltd, SS= ss, OUT=out, Order=o, Cost=cost, Bullwhip=bw))
 # stores the current factory data frame, called by F_values() and set by F_values(new_F_values)
-  F_values <- reactiveVal(data.frame( Demand=o, Receive=rc, Forecast=m, NS=ns, LTD=ltd, SS= ss, OUT=out, Order=o, InvCost=cost, Bullwhip=bw))
+  F_values <- reactiveVal(data.frame( Demand=o, Receive=rc, Forecast=m, NS=ns, LTD=ltd, SS= ss, OUT=out, Order=o, Cost=cost, Bullwhip=bw))
 # stores the perceived demand of all participants in a data frame, called by bullwhip_values() and set by values(new_bullwhip_values)
   perceived_demand <- reactiveVal(data.frame( Customer_demand=d, Retailer=o, Wholesaler=o, Distributor=o, Factory=o))
 # update values table on button click
@@ -91,7 +91,7 @@ function(input, output, session) {
     #m_new <- mean(tail(old_values$Demand, sma_periods() )) 
       if(forcast_model() =='SMA')isolate({m_new <- mean(tail(old_values$Demand, sma_periods() )) })
       if(forcast_model() =='ES')isolate({ m_new <- es_alpha()*tail(old_values$Demand, 1) + (1-es_alpha() )*tail(old_values$Forecast, 1) })
-      if(forcast_model() =='MMSE')isolate({ r_model<- arima( old_values$Demand, order=c(1,0,0) )
+      if(forcast_model() =='MMSE')isolate({ r_model<- arima( old_values$Demand, order=c(1,0,0),method="ML" )
                                             ar1_r<- predict(r_model, 1) 
                                             m_new <-round(ar1_r$pred[1],2)
                                   })#endisolate
@@ -112,7 +112,7 @@ function(input, output, session) {
     bw_new <-   var_order/var_demand
 
     new_values <- data.frame(Demand=d_new, Receive=rc_new, Forecast=m_new, NS=ns_new, LTD=ltd_new, SS= ss_new, OUT=out_new, 
-                              Order=o_new, InvCost=cost_new, Bullwhip=bw_new)
+                              Order=o_new, Cost=cost_new, Bullwhip=bw_new)
     
     # attach the new line to the old data frame here:
     new_df <- round(rbind(old_values, new_values),3)
@@ -133,7 +133,7 @@ function(input, output, session) {
   
   if(forcast_model() =='SMA')isolate({wm_new <- mean(tail(old_W_values$Demand, sma_periods() )) })
   if(forcast_model() =='ES')isolate({ wm_new <- es_alpha()*tail(old_W_values$Demand, 1) + (1-es_alpha() )*tail(old_W_values$Forecast, 1) })
-  if(forcast_model() =='MMSE')isolate({ w_model <- arima( old_W_values$Demand, order=c(1,0,0) )
+  if(forcast_model() =='MMSE')isolate({ w_model <- arima( old_W_values$Demand, order=c(1,0,0),method="ML" )
                                         ar1_w <- predict(w_model, 1)
                                         wm_new <-round(ar1_w$pred[1],2)
                                })#endisolate
@@ -153,7 +153,7 @@ function(input, output, session) {
   wbw_new <- wvar_order/wvar_demand
 
   new_W_values <- data.frame(Demand=wd_new, Receive=wrc_new, Forecast=wm_new, NS=wns_new, LTD=wltd_new, SS= wss_new,
-                          OUT=wout_new, Order=wo_new, InvCost=wcost_new, Bullwhip=wbw_new)
+                          OUT=wout_new, Order=wo_new, Cost=wcost_new, Bullwhip=wbw_new)
 
 # attach the new line to the old data frame here:
   new_wdf <- round(rbind(old_W_values, new_W_values),2)
@@ -174,7 +174,7 @@ function(input, output, session) {
   
   if(forcast_model() =='SMA')isolate({dm_new <- mean(tail(old_D_values$Demand, sma_periods() )) })
   if(forcast_model() =='ES')isolate({ dm_new <- es_alpha()*tail(old_D_values$Demand, 1) + (1-es_alpha() )*tail(old_D_values$Forecast, 1) })
-  if(forcast_model() =='MMSE')isolate({ d_model <- arima( old_D_values$Demand, order=c(1,0,0) )
+  if(forcast_model() =='MMSE')isolate({ d_model <- arima( old_D_values$Demand, order=c(1,0,0),method="ML" )
                                                    ar1_d <- predict(d_model, 1)
                                                    dm_new <-round(ar1_d$pred[1],2)
                                        })#endisolate
@@ -194,7 +194,7 @@ function(input, output, session) {
   dbw_new <- dvar_order/dvar_demand
   
   new_D_values <- data.frame(Demand=dd_new, Receive=drc_new, Forecast=dm_new, NS=dns_new, LTD=dltd_new, SS= dss_new,
-                           OUT=dout_new, Order=do_new, InvCost=dcost_new, Bullwhip=dbw_new)
+                           OUT=dout_new, Order=do_new, Cost=dcost_new, Bullwhip=dbw_new)
 
 # attach the new line to the old data frame here:
   new_ddf <- round(rbind(old_D_values, new_D_values),2)
@@ -216,7 +216,9 @@ function(input, output, session) {
   
   if(forcast_model() =='SMA')isolate({fm_new <- mean(tail(old_F_values$Demand, sma_periods() )) })
   if(forcast_model() =='ES')isolate({ fm_new <- es_alpha()*tail(old_F_values$Demand, 1) + (1-es_alpha() )*tail(old_F_values$Forecast, 1) })
-  if(forcast_model() =='MMSE')isolate({ f_model <- arima( old_F_values$Demand, order=c(1,0,0) )
+  #Here the MLE (maximum likelihood estimation) method is used to have a stationary model. 
+  #It is slower but gives better estimates.
+  if(forcast_model() =='MMSE')isolate({ f_model <- arima( old_F_values$Demand, order=c(1,0,0),method="ML" )
                                         ar1_f <- predict(f_model, 1)
                                         fm_new <-round(ar1_f$pred[1],2)
                                       })#endisolate
@@ -236,7 +238,7 @@ function(input, output, session) {
   fbw_new <- fvar_order/fvar_demand
 
   new_F_values <- data.frame(Demand=fd_new, Receive=frc_new, Forecast=fm_new, NS=fns_new, LTD=fltd_new, SS= fss_new,
-                           OUT=fout_new, Order=fo_new, InvCost=fcost_new, Bullwhip=fbw_new)
+                           OUT=fout_new, Order=fo_new, Cost=fcost_new, Bullwhip=fbw_new)
 
 # attach the new line to the old data frame here:
   new_fdf <- round(rbind(old_F_values, new_F_values),2)
@@ -281,6 +283,22 @@ function(input, output, session) {
     F_values( F_values()[1:5,])
     perceived_demand( perceived_demand()[1:5,])
   })#endobserveEvent  
+  
+  
+  
+  #Restart
+  defaultvalues <- observeEvent(input$restart, {
+    isolate(updateCounter$i == 0)
+    values( values()[1:5,])
+    W_values( W_values()[1:5,])
+    D_values( D_values()[1:5,])
+    F_values( F_values()[1:5,])
+    updateCounter$i <- 0 
+  }) 
+  
+  
+  
+  
 ####################################################################################################################  
 #reactive counter modified
 ####################################################################################################################  
@@ -322,11 +340,11 @@ function(input, output, session) {
       f10 <<- f_sum
       sc_partialcost10 <<-r_sum + w_sum + d_sum + f_sum
     
-      str_pc <- paste("Total partial cost", sc_partialcost10)
-      str1 <- paste("Retailer cost", r10)
-      str2 <- paste("Wholesaler cost", w10)
-      str3 <- paste("Distributor cost", d10)
-      str4 <- paste("Factory cost", f10)
+      str_pc <- paste("Partial cost:", sc_partialcost10)
+      str1 <- paste("Retailer:", r10)
+      str2 <- paste("Wholesaler:", w10)
+      str3 <- paste("Distributor:", d10)
+      str4 <- paste("Factory:", f10)
       partial_cost<<- HTML(paste(str_pc, str1, str2, str3, str4, sep = '<br/>'))
       return(partial_cost)
                           
@@ -337,10 +355,10 @@ function(input, output, session) {
     if(updateCounter$i>10) {
       sc_totalcost <-r_sum + w_sum + d_sum + f_sum
       str_tc <- paste("Total cost", sc_totalcost)
-      str5 <- paste("Retailer total cost", r_sum)
-      str6 <- paste("Wholesaler total cost", w_sum)
-      str7 <- paste("Distributor total cost", d_sum)
-      str8 <- paste("Factory total cost", f_sum)
+      str5 <- paste("Retailer:", r_sum)
+      str6 <- paste("Wholesaler:", w_sum)
+      str7 <- paste("Distributor:", d_sum)
+      str8 <- paste("Factory:", f_sum)
       total_cost<- HTML(paste(str_tc, str5, str6, str7, str8, sep = '<br/>'))
       return( HTML(paste(partial_cost, total_cost, sep = '<br/><br/>')))
     } 
@@ -349,7 +367,14 @@ function(input, output, session) {
 ####################################################################################################################    
 ## Tables outputs
 ####################################################################################################################  
-  output$Retailertab <- DT::renderDataTable({  return(values())  })
+ # output$Retailertab <- DT::renderDataTable({  return(values())  })
+  output$Retailertab <- DT::renderDataTable({  return(values())  }
+                                            ,
+                                            options = list(
+                                              autoWidth = TRUE,
+                                              columnDefs = list(list(width = '80px', targets = "_all"))
+                                            )
+                                            )
   # # Print the wholwsale table  stored in W_values$df, 
    output$Wholesalertab <- DT::renderDataTable({  return(W_values())  })
   # # Print the distribution table stored in D_values$df, 
@@ -373,29 +398,35 @@ output$bullwhip_plot<- renderPlot({ matplot(perceived_demand(), type="l", pch=1,
   output$notation <- renderUI({
   fluidRow(
     column(12, 
-      strong('Back orders (B):'), 'orders that can not be filled at current time.',
-      br(),     
-     strong('Demand (D)'), 'current demand',
+      strong('Back orders (B),'), 'orders that can not be filled at current time.',
+      br(),   
+      strong('Bullwhip,'), ' simulated measure of the increase in demand variability that occurs at each echelon of the supply chain',
+      br(), 
+      strong('Cost,'), 'the inventory cost in current period.',
+      br(), 
+     strong('Demand (D),'), 'current demand.',
      br(),    
-  strong('Forecast'), 'referes to the mean demand estimation',
+  strong('Forecast'), 'refers to the mean demand estimation.',
          br(),
-  strong('Lead time (L)'), 'is the time in days between the moment an order is placed until the moment the order is received',
+  strong('Lead time (L)'), 'is the number of days between the time an order is placed and the time it is received.',
   br(),
-  strong('Lead time demand (LTD)'), 'is the average demand during lead time',
+  strong('Lead time demand (LTD)'), 'is the average demand during lead time.',
   br(),
-  strong('Net stock (NS)'), 'is defined here as a current inventory level ',
+  strong('Net stock (NS)'), 'is defined here as a current inventory level. ',
+  br(),
+  strong('Order (O),'), 'stocks ordered but not yet arrived. ',
   br(),
   strong('Order Up to Level (OUT)'), 'is a replenishment policy. Each period companies review stock levels and place an order to bring its stock levels up to a target level.',
   br(),
-  strong(' Receive'), 'refers to the arrive of orders placed L periods ago' ,
+  strong(' Receive'), 'refers to the arrival of orders placed L periods ago.' ,
   br(),
-  strong('Safety factor (z)'), 'is a constant associated with the service level, also called the z-score',
+  strong('Safety factor (z)'), 'is a constant associated with the service level, also called the z-score.',
   br(),
-  strong('Safety stock (SS),'), 'the amount of inventory that companies keep in order to protect theirself against stockout situations during lead time ',
+  strong('Safety stock (SS),'), 'the amount of inventory that companies keep in order to protect theirselves against stockout situations during lead time. ',
   br(),
-  strong('Service level (SL),'), 'the probability of not runnig out of stock during the next replenishment cycle',
-  br(),
-  strong('Standart deviation (Std)'), 'of demand'
+  strong('Service level (SL),'), 'the probability of not running out of stock during the next replenishment cycle.',
+  br(),  
+  strong('Standart deviation (Std)'), 'of demand.'
   )#endcolumn     
  )#endfluidRow
 })#endrenderUI
@@ -403,19 +434,26 @@ output$bullwhip_plot<- renderPlot({ matplot(perceived_demand(), type="l", pch=1,
 
   output$formulas <- renderUI({
     fluidRow(
-      column(6, 
-             withMathJax('Receive = Order(-L) '),
+      column(4, 
+             withMathJax('Receive = O(-L) '),  
              br(),br(),
              withMathJax('NS = NS(-1) + Receive - D'),
              br(),br(),
+            # withMathJax('b=\\frac{1}{2)'), 
              withMathJax('OUT = LTD + SS')
       ),#endcolumn
-      column(6, 
-             withMathJax('Order = OUT - NS'),
+      column(4, 
+             withMathJax('O = OUT - NS'),
              br(),br(),
              withMathJax('LTD = Forecast*L'),
              br(),br(),
              withMathJax('SS = z*Std*\\(\\sqrt{L}\\)')
+             
+      ),#endcolumn 
+      column(4, 
+             withMathJax('Bullwhip = Var(O)/Var(D)'),
+             br(),br()
+             
       )#endcolumn 
     )#endfluidRow
   })#endrenderUI
