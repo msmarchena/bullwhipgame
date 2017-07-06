@@ -1,7 +1,5 @@
 library(shiny)
 library(forecast)
-library(SCperf)
-library(DT)
 library(plotly)
 
 ## mylag function
