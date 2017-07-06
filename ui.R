@@ -183,10 +183,10 @@ tabPanel("Participants inputs",
                      column(12,
                             h4('About SCbullwhip'), 
                          
-                            'The SCbullwhip is an Open Source project developed to illustrate and explore the', em('bullwhip effect.'), 
+                            p('The SCbullwhip is an Open Source project developed to illustrate and explore the', em('bullwhip effect.'), 
 'The main goal of our interactive tool is to present the dynamics of distribution of a product and to show typical problems arising 
-from a non-coordinated system, specially the', em('bullwhip effect.'), 'Our interactive tool use R programming language and Shiny
-to offer an easy and friendly user experience.',
+from a non-coordinated system. Our interactive tool use R programming language and Shiny
+to offer an easy and friendly user experience.'),
                             br(), br(),
 
                            p(' Created by ', strong('Marlene Silva Marchena')),
