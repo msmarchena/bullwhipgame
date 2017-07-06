@@ -49,17 +49,7 @@ in this case the wholesaler. She receives orders made after a delivery lead time
                                )#endmainPanel
                       ),
                       tabPanel("How To Play",
-                               br(),
                                
-                               
-                       fluidRow(
-                             column(12,
-                                    p('The members of the supply chain need to
-meet customer demand with minimal shortage situations and inventory cost, while satisfying service level requirements. All
-participants use the same inventory replenishment policy, forecast method, delivery lead time and service level.
-Holding and shortage cost are fixed and information sharing and cooperation is not allowed.')                                    
-                             )#endcolumn
-                       ),#endfluidRow
        br(),                
        p(strong('Instructions')),                 
                                
