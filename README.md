@@ -1,6 +1,6 @@
-# SCbullwhip
+# bullwhipgame
 
-The SCbullwhip is an educational game that has as purpose the illustration and exploration of 
+The bullwhipgame is an educational game that has as purpose the illustration and exploration of 
 the *bullwhip effect*, i.e. the increase in demand variability along the supply chain.
 
 
@@ -17,7 +17,7 @@ The goal of the game is to minimize the total inventory cost in the supply chain
 
 **Installation:**
 
-To play the bullwhip game locally you must have installed R, Shiny and the packages used in the server file.<br>
+To play the bullwhipgame locally you must have installed R, Shiny and the packages used in the server file.<br>
 Copy the "server.R" and "ui.R" files and "www" folder in the same directory on your machine.<br>
 Open one of the files in RStudio and click the "runApp" button.
 
