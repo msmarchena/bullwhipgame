@@ -25,4 +25,4 @@ From Github, the following command will download and run the application
 
 `shiny::runGitHub('bullwhipgame', 'msmarchena')`
 
-To play the bullwhip game online visit https://marchenamarlene.shinyapps.io/scbullwhip/
+To play the bullwhip game online visit https://marchenamarlene.shinyapps.io/bullwhipgame/
