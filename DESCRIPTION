@@ -1,0 +1,14 @@
+Package: bullwhipgame
+Type: Package
+Title: Bullwhip Effect Demo in Shiny
+Version: 0.1.0
+Author: Marlene Marchena
+Maintainer: Marlene Marchena <marchenamarlene@gmail.com>
+Description: The bullwhipgame is an educational game that has as purpose the illustration and exploration of the bullwhip effect,i.e, the increase in demand variability along the supply chain. Marchena Marlene (2010) <arXiv:1009.3977>.  
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports: shiny
+
+
+ 
